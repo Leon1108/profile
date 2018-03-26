@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"sync/atomic"
+	"syscall"
 )
 
 const (
@@ -230,7 +231,7 @@ func Start(options ...func(*Profile)) interface {
 	if !prof.noShutdownHook {
 		go func() {
 			c := make(chan os.Signal, 1)
-			signal.Notify(c, os.Interrupt)
+			signal.Notify(c, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM, syscall.SIGQUIT)
 			<-c
 
 			log.Println("profile: caught interrupt, stopping profiles")
